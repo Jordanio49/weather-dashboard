@@ -1,46 +1,145 @@
 // create variables calling the current weather elements that will be changed with the API
-var searchFormEl = document.getElementById('search-form');
 var searchInputEl = document.getElementById('city');
 var searchBtnEl = document.getElementById('search-btn');
 var searchHistoryEl = document.getElementById('search-history');
 var currentCityEl = document.getElementById('current-city');
 var currentDateEl = document.getElementById('current-date');
-// var currentIconEl = document.getElementById('weather-icon');
-// var currentTempEl = document.getElementById('temp');
-// var currentWindEl = document.getElementById('wind');
-// var currentHumidityEl = document.getElementById('humid');
-// var currentUvIndexEl = document.getElementById('uv-index');
-var dayOne = document.getElementById('date1');
-var dayTwo = document.getElementById('date2');
-var dayThree = document.getElementById('date3');
-var dayFour = document.getElementById('date4');
-var dayFive = document.getElementById('date5');
+var currentIconEl = document.getElementById('weather-icon');
+var currentTempEl = document.getElementById('temp');
+var currentWindEl = document.getElementById('wind');
+var currentHumidityEl = document.getElementById('humid');
+var currentUvIndexEl = document.getElementById('uv-index');
+var day1Date = document.getElementById('date1');
+var day1Icon = document.getElementById('icon1');
+var day1Temp = document.getElementById('temp1');
+var day1Wind = document.getElementById('wind1');
+var day1Humidity = document.getElementById('humidity1');
+var day2Date = document.getElementById('date2');
+var day2Icon = document.getElementById('icon2');
+var day2Temp = document.getElementById('temp2');
+var day2Wind = document.getElementById('wind2');
+var day2Humidity = document.getElementById('humidity2');
+var day3Date = document.getElementById('date3');
+var day3Icon = document.getElementById('icon3');
+var day3Temp = document.getElementById('temp3');
+var day3Wind = document.getElementById('wind3');
+var day3Humidity = document.getElementById('humidity3');
+var day4Date = document.getElementById('date4');
+var day4Icon = document.getElementById('icon4');
+var day4Temp = document.getElementById('temp4');
+var day4Wind = document.getElementById('wind4');
+var day4Humidity = document.getElementById('humidity4');
+var day5Date = document.getElementById('date5');
+var day5Icon = document.getElementById('icon5');
+var day5Temp = document.getElementById('temp5');
+var day5Wind = document.getElementById('wind5');
+var day5Humidity = document.getElementById('humidity5');
 
 
-currentDateEl.textContent = moment().format(' MMMM Do YYYY ');
-dayOne.textContent = moment().add(1, 'd').format("MM/DD/YYYY");
-dayTwo.textContent = moment().add(2, 'd').format("MM/DD/YYYY");
-dayThree.textContent = moment().add(3, 'd').format("MM/DD/YYYY");
-dayFour.textContent = moment().add(4, 'd').format("MM/DD/YYYY");
-dayFive.textContent = moment().add(5, 'd').format("MM/DD/YYYY");
+currentDateEl.textContent = moment().format(' (MMMM Do YYYY) ');
+day1Date.textContent = moment().add(1, 'd').format("MM/DD/YYYY");
+day2Date.textContent = moment().add(2, 'd').format("MM/DD/YYYY");
+day3Date.textContent = moment().add(3, 'd').format("MM/DD/YYYY");
+day4Date.textContent = moment().add(4, 'd').format("MM/DD/YYYY");
+day5Date.textContent = moment().add(5, 'd').format("MM/DD/YYYY");
 
-searchBtnEl.addEventListener('click', function(event) {
+let storeWeather = JSON.parse(localStorage.getItem('weather')) || [];
+
+searchBtnEl.addEventListener('click', function (event) {
     event.preventDefault();
+    buttonList();
+
     currentCityEl.textContent = searchInputEl.value.toUpperCase();
-    console.log(searchInputEl.value)
-   
-    var listEl = document.createElement('li');
-    listEl.innerHTML = "<div >"
-    listEl.textContent = searchInputEl.value;
-    searchHistoryEl.appendChild(listEl);
-    console.log(searchInputEl.value)
+
+    fetch("http://api.openweathermap.org/geo/1.0/direct?q=" + searchInputEl.value + "&limit=1&appid=fa64d7b57973d6db14bbf5a9c0229464")
+        .then(function (response) {
+            if (response.ok) {
+                console.log(response)
+                return response.json()
+            } else {
+                return Promise.reject(response)
+            }
+        })
+        .then((data) => {
+            lat = data[0].lat
+            lon = data[0].lon
+            console.log(lat, lon)
+            console.log(data)
+        
+
+    fetch('https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lon + '&units=imperial&appid=fa64d7b57973d6db14bbf5a9c0229464')
+        .then(function (response) {
+            if (response.ok) {
+                return response.json()
+            }
+        })
+        .then((data) => {
+            console.log(data)
+            // current date weather data
+            var cityData = searchInputEl.value;
+            var tempData = data.current.temp;
+            var windData = data.current.wind_speed;
+            var humidityData = data.current.humidity;
+            var uvData = data.current.uvi;
+            console.log(data)
+            storeData(cityData, tempData, windData, humidityData, uvData)
+            currentTempEl.innerHTML = 'Temperature: ' + tempData + '°F';
+            currentWindEl.innerHTML = 'Wind: ' + windData + ' MPH';
+            currentHumidityEl.innerHTML = 'Humidity: ' + humidityData + '%';
+            currentUvIndexEl.innerHTML = 'UV Index: ' + uvData;
+            currentIconEl.innerHTML = "<img src=http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png>"
+            // 5 day forcast data
+            day1Temp.innerHTML = 'Temp: ' + data.daily[0].temp.max + '°F';
+            day1Wind.innerHTML = 'Wind: ' + data.daily[0].wind_speed + ' MPH';
+            day1Humidity.innerHTML = 'Humidity: ' + data.daily[0].humidity + '%';
+            day1Icon.innerHTML = "<img src=http://openweathermap.org/img/wn/" + data.daily[0].weather[0].icon + "@2x.png>"
+            day2Temp.innerHTML = 'Temp: ' + data.daily[1].temp.max + '°F';
+            day2Wind.innerHTML = 'Wind: ' + data.daily[1].wind_speed + ' MPH';
+            day2Humidity.innerHTML = 'Humidity: ' + data.daily[1].humidity + '%';
+            day2Icon.innerHTML = "<img src=http://openweathermap.org/img/wn/" + data.daily[1].weather[0].icon + "@2x.png>"
+            day3Temp.innerHTML = 'Temp: ' + data.daily[2].temp.max + '°F';
+            day3Wind.innerHTML = 'Wind: ' + data.daily[2].wind_speed + ' MPH';
+            day3Humidity.innerHTML = 'Humidity: ' + data.daily[2].humidity + '%';
+            day3Icon.innerHTML = "<img src=http://openweathermap.org/img/wn/" + data.daily[2].weather[0].icon + "@2x.png>"
+            day4Temp.innerHTML = 'Temp: ' + data.daily[3].temp.max + '°F';
+            day4Wind.innerHTML = 'Wind: ' + data.daily[3].wind_speed + ' MPH';
+            day4Humidity.innerHTML = 'Humidity: ' + data.daily[3].humidity + '%';
+            day4Icon.innerHTML = "<img src=http://openweathermap.org/img/wn/" + data.daily[3].weather[0].icon + "@2x.png>"
+            day5Temp.innerHTML = 'Temp: ' + data.daily[4].temp.max + '°F';
+            day5Wind.innerHTML = 'Wind: ' + data.daily[4].wind_speed + ' MPH';
+            day5Humidity.innerHTML = 'Humidity: ' + data.daily[4].humidity + '%';
+            day5Icon.innerHTML = "<img src=http://openweathermap.org/img/wn/" + data.daily[4].weather[0].icon + "@2x.png>"
+        })
+    });
 });
 
-// create list with submission for value as the element 
+// creating the search history 
+function storeData(cityName, temperature, wind, humidity, uvi) {
+    let weatherObject = {
+        cityName: "",
+        temperature: {},
+        wind: {},
+        humidity: {},
+        uvi: {},
+    }
+    weatherObject.cityName = cityName
+    weatherObject.temperature = temperature
+    weatherObject.wind = wind
+    weatherObject.humidity = humidity
+    weatherObject.uvi = uvi
+    storeWeather.push(weatherObject)
+    localStorage.setItem('weather', JSON.stringify(storeWeather))
+}
 
-// assume I need to create a localstorage save to geth the values for the elements so they stay on reload
-
-// call the api and get icon, temp, wind, humidity, and uv-index for current day
-
-// call api to get 5 day forecast with current date + 1, icon, temp, wind, humidity
-// assuming I need to create a for loop to get each date and the rest can be found via api for said date
+function buttonList() {
+    var newArr = []
+    for (var i = 1; i < storeWeather.length; i++){
+        console.log(storeWeather[i].cityName)
+        if(newArr.indexOf(storeWeather[i]) === -1){
+            newArr.push(storeWeather[i]);
+            var cityList = document.createElement('button');
+            cityList.textContent = storeWeather[i].cityName;
+            searchHistoryEl.appendChild(cityList)
+        }
+    };
+}
