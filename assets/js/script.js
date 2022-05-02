@@ -35,7 +35,7 @@ var day5Temp = document.getElementById('temp5');
 var day5Wind = document.getElementById('wind5');
 var day5Humidity = document.getElementById('humidity5');
 
-
+// setting the date for current weather and the 5 day forecast
 currentDateEl.textContent = moment().format(' (MMMM Do YYYY) ');
 day1Date.textContent = moment().add(1, 'd').format("MM/DD/YYYY");
 day2Date.textContent = moment().add(2, 'd').format("MM/DD/YYYY");
@@ -43,14 +43,20 @@ day3Date.textContent = moment().add(3, 'd').format("MM/DD/YYYY");
 day4Date.textContent = moment().add(4, 'd').format("MM/DD/YYYY");
 day5Date.textContent = moment().add(5, 'd').format("MM/DD/YYYY");
 
+// getting data from localStorage
 let storeWeather = JSON.parse(localStorage.getItem('weather')) || [];
 
+// event listener responding to the click of the search button
 searchBtnEl.addEventListener('click', function (event) {
     event.preventDefault();
+    
+    // calls the create button function on click
     buttonList();
 
+    // places the capitalized city name that was searched into the top of the current weather div 
     currentCityEl.textContent = searchInputEl.value.toUpperCase();
 
+    // used the geo API to get the lat and lon of the city that was searched by the user
     fetch("http://api.openweathermap.org/geo/1.0/direct?q=" + searchInputEl.value + "&limit=1&appid=fa64d7b57973d6db14bbf5a9c0229464")
         .then(function (response) {
             if (response.ok) {
@@ -66,7 +72,7 @@ searchBtnEl.addEventListener('click', function (event) {
             console.log(lat, lon)
             console.log(data)
         
-
+    // plugging the lat and lon into the onecall API to get the weather data for the city searched
     fetch('https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lon + '&units=imperial&appid=fa64d7b57973d6db14bbf5a9c0229464')
         .then(function (response) {
             if (response.ok) {
@@ -113,7 +119,7 @@ searchBtnEl.addEventListener('click', function (event) {
     });
 });
 
-// creating the search history 
+// creating the search history that will be saved in localStorage
 function storeData(cityName, temperature, wind, humidity, uvi) {
     let weatherObject = {
         cityName: "",
@@ -131,6 +137,7 @@ function storeData(cityName, temperature, wind, humidity, uvi) {
     localStorage.setItem('weather', JSON.stringify(storeWeather))
 }
 
+// dynamically created buttons that have the textContent from the locally stored searches
 function buttonList() {
     var newArr = []
     for (var i = 1; i < storeWeather.length; i++){
