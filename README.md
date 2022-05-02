@@ -29,3 +29,7 @@
 ![Screenshot of my Javascript Quiz](assets/images/screenshot.png)
 
 ## **Link to Page and Repository**
+
+Page: https://jordanio49.github.io/weather-dashboard/
+
+Repository: https://github.com/Jordanio49/weather-dashboard
