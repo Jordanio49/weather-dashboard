@@ -57,7 +57,7 @@ searchBtnEl.addEventListener('click', function (event) {
     currentCityEl.textContent = searchInputEl.value.toUpperCase();
 
     // used the geo API to get the lat and lon of the city that was searched by the user
-    fetch("http://api.openweathermap.org/geo/1.0/direct?q=" + searchInputEl.value + "&limit=1&appid=fa64d7b57973d6db14bbf5a9c0229464")
+    fetch("https://api.openweathermap.org/geo/1.0/direct?q=" + searchInputEl.value + "&limit=1&appid=fa64d7b57973d6db14bbf5a9c0229464")
         .then(function (response) {
             if (response.ok) {
                 console.log(response)
